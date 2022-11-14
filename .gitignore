@@ -1,0 +1,7 @@
+.idea/
+*.iml
+__pycache__/
+target/
+.vscode/
+application_default_credentials.json
+*.code-workspace

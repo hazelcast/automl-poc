@@ -1,0 +1,28 @@
+services:
+  hazelcast:
+    image: hazelcast/hazelcast:5.2.0
+    environment:
+      JAVA_OPTS: -Dhazelcast.config=/opt/project/config/hazelcast.yaml
+      GOOGLE_APPLICATION_CREDENTIALS: /opt/project/application_default_credentials.json
+    volumes:
+      - ".:/opt/project"
+
+  mancenter:
+    image: hazelcast/management-center:5.2.0
+    volumes:
+      - ".:/opt/project"
+    ports:
+      - "8080:8080"
+
+  hazelcast-shell:
+    image: hazelcast/hazelcast:5.2.0
+    volumes:
+      - ".:/opt/project"
+    command: tail -f /dev/null
+
+  event-sender:
+    build:
+      context: event-sender
+    volumes:
+      - ".:/opt/project"
+    command: python eventsender.py --dir /opt/project/data/transactions_for_generator --tps 10 --hz-members hazelcast:5701 
