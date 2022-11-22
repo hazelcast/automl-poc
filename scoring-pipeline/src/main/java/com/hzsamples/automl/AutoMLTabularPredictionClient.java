@@ -1,5 +1,7 @@
 package com.hzsamples.automl;
 
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.aiplatform.v1.EndpointName;
 import com.google.cloud.aiplatform.v1.PredictResponse;
 import com.google.cloud.aiplatform.v1.PredictionServiceClient;
@@ -8,6 +10,7 @@ import com.google.protobuf.NullValue;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
@@ -20,8 +23,11 @@ public class AutoMLTabularPredictionClient  {
     private final EndpointName endpointName;
 
     public AutoMLTabularPredictionClient(String project, String location, String endpointId) throws IOException {
+        GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream("/Users/rmay/Downloads/hazelcast-33-9f491b43f63b.json"))
+                .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
         PredictionServiceSettings predictionServiceSettings =
-                PredictionServiceSettings.newBuilder().setEndpoint(location + "-aiplatform.googleapis.com:443").build();
+                PredictionServiceSettings.newBuilder().setEndpoint(location + "-aiplatform.googleapis.com:443")
+                        .setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
         predictionServiceClient = PredictionServiceClient.create(predictionServiceSettings);
         endpointName = EndpointName.of(project, location, endpointId);
     }
